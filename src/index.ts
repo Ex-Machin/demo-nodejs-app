@@ -22,6 +22,10 @@ const db = {
     ]
 }
 
+app.get('/', (req, res) => {
+    res.send("Test")
+})
+
 app.get('/courses/:id', (req, res) => {
     const found = db.courses.find(c => c.id === +req.params.id)
 
