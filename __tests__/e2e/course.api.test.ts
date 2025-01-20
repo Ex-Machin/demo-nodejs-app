@@ -1,5 +1,7 @@
 import request from "supertest"
 import { app, HTTP_STATUSES } from "../../src"
+import { CourseCreateModel } from "../../src/models/CourseCreateModel"
+import { CourseUpdateModel } from "../../src/models/CourseUpdateModel"
 
 describe("/course", () => {
     beforeAll(async () => {
@@ -19,9 +21,11 @@ describe("/course", () => {
     })
 
     it("should not create with correct input data", async () => {
+        const data: CourseCreateModel = { title: "" }
+
         await request(app)
             .post("/courses")
-            .send({ title: "" })
+            .send(data)
             .expect(HTTP_STATUSES.NOT_FOUND_404)
 
         await request(app)
@@ -32,9 +36,10 @@ describe("/course", () => {
 
     let createdCourse: any = null
     it("should create with correct input data", async () => {
+        const data: CourseCreateModel = { title: "test" }
         const createResponse = await request(app)
             .post("/courses")
-            .send({ title: "test" })
+            .send(data)
             .expect(HTTP_STATUSES.CREATED_201)
 
         createdCourse = createResponse.body
@@ -55,37 +60,46 @@ describe("/course", () => {
             .send(createdCourse)
             .expect(HTTP_STATUSES.CREATED_201)
 
+        const data: CourseUpdateModel = { title: "" }
+
         await request(app)
             .put("/courses/" + 0)
-            .send({ title: "" })
+            .send(data)
             .expect(HTTP_STATUSES.BAD_REQUEST_400)
     })
 
     it("should not update that not exist", async () => {
+        const data: CourseUpdateModel = { title: "test" }
+
         await request(app)
             .put("/courses" + 2)
-            .send({ title: "test" })
+            .send(data)
             .expect(HTTP_STATUSES.NOT_FOUND_404)
     })
 
     it("should update", async () => {
+        const data: CourseUpdateModel = { title: "new test" }
+
         await request(app)
             .put("/courses/" + createdCourse.id)
-            .send({ title: "new test" })
+            .send(data)
             .expect(HTTP_STATUSES.NO_CONTENT_204)
 
         await request(app)
             .get("/courses/" + createdCourse.id)
             .expect(HTTP_STATUSES.OK_200, {
                 ...createdCourse,
-                title: "new test"
+                title: data.title
             })
     })
 
     it("should delete", async () => {
+
+        const data: CourseCreateModel = { title: "test" }
+
         await request(app)
             .post("/courses")
-            .send({title: "test"})
+            .send(data)
             .expect(HTTP_STATUSES.CREATED_201)
 
         await request(app)
