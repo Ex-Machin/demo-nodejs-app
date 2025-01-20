@@ -1,9 +1,9 @@
 import express from 'express'
 
-const app = express()
+export const app = express()
 const port = process.env.PORT || 5000
 
-const HTTP_STATUSES = {
+export const HTTP_STATUSES = {
     OK_200 : 200,
     CREATED_201: 201,
     NO_CONTENT_204: 204,
@@ -72,7 +72,7 @@ app.delete('/courses/:id', (req, res) => {
 
 app.put('/courses/:id', (req, res) => {
     if (!req.body.title) {
-        res.sendStatus(HTTP_STATUSES.NOT_FOUND_404)
+        res.sendStatus(HTTP_STATUSES.BAD_REQUEST_400)
         return
     }
 
@@ -84,6 +84,11 @@ app.put('/courses/:id', (req, res) => {
     }
 
     found.title = req.body.title
+    res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
+})
+
+app.delete("/__tests__/data", (req, res) => {
+    db.courses = []
     res.sendStatus(HTTP_STATUSES.NO_CONTENT_204)
 })
 
